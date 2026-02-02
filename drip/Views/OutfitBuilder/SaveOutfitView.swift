@@ -11,6 +11,7 @@ struct SaveOutfitView: View {
     @Environment(\.dismiss) private var dismiss
 
     let selectedItemIds: Set<UUID>
+    let editorData: EditorData
     var onSave: (() -> Void)?
 
     @Query private var allItems: [ClothingItem]
@@ -18,6 +19,8 @@ struct SaveOutfitView: View {
     @State private var outfitName = ""
     @State private var selectedOccasion: Occasion = .casual
     @State private var notes = ""
+    @State private var isSaving = false
+    @State private var previewImage: UIImage?
 
     private var selectedItems: [ClothingItem] {
         allItems.filter { selectedItemIds.contains($0.id) }
@@ -38,57 +41,38 @@ struct SaveOutfitView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
-                    saveOutfit()
+                if isSaving {
+                    ProgressView()
+                } else {
+                    Button("Save") {
+                        saveOutfit()
+                    }
+                    .disabled(!isFormValid)
                 }
-                .disabled(!isFormValid)
             }
+        }
+        .task {
+            let canvasRect = CGRect(origin: .zero, size: editorData.canvasSize)
+            previewImage = await editorData.exportAsImage(canvasRect)
         }
     }
 
     private var previewSection: some View {
-        Section("Preview") {
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
-                    ForEach(selectedItems) { item in
-                        itemThumbnail(item)
-                    }
-                }
-                .padding(.vertical, 8)
-            }
-            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-
-            Text("\(selectedItems.count) items selected")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
-    }
-
-    private func itemThumbnail(_ item: ClothingItem) -> some View {
-        VStack(spacing: 6) {
-            if let imageData = item.imageData,
-               let uiImage = UIImage(data: imageData) {
-                Image(uiImage: uiImage)
+        Section {
+            if let previewImage {
+                Image(uiImage: previewImage)
                     .resizable()
-                    .scaledToFill()
-                    .frame(width: 60, height: 60)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .scaledToFit()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 350)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
             } else {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(item.color.color.opacity(0.3))
-                        .frame(width: 60, height: 60)
-
-                    Image(systemName: item.category.systemImage)
-                        .foregroundStyle(.secondary)
-                }
+                ProgressView()
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 350)
             }
-
-            Text(item.name)
-                .font(.caption2)
-                .lineLimit(1)
-                .frame(width: 60)
         }
+        .listRowInsets(EdgeInsets())
     }
 
     private var detailsSection: some View {
@@ -117,21 +101,31 @@ struct SaveOutfitView: View {
     }
 
     private func saveOutfit() {
-        let outfit = Outfit(
-            name: outfitName.trimmingCharacters(in: .whitespacesAndNewlines),
-            occasion: selectedOccasion,
-            notes: notes.isEmpty ? nil : notes,
-            items: selectedItems
-        )
+        isSaving = true
 
-        modelContext.insert(outfit)
-        onSave?()
+        Task { @MainActor in
+            // Export canvas as image
+            let canvasRect = CGRect(origin: .zero, size: editorData.canvasSize)
+            let canvasImage = await editorData.exportAsImage(canvasRect)
+
+            let outfit = Outfit(
+                name: outfitName.trimmingCharacters(in: .whitespacesAndNewlines),
+                occasion: selectedOccasion,
+                notes: notes.isEmpty ? nil : notes,
+                items: selectedItems,
+                previewImageData: canvasImage?.pngData()
+            )
+
+            modelContext.insert(outfit)
+            isSaving = false
+            onSave?()
+        }
     }
 }
 
 #Preview {
     NavigationStack {
-        SaveOutfitView(selectedItemIds: [])
+        SaveOutfitView(selectedItemIds: [], editorData: EditorData())
     }
     .modelContainer(PreviewData.previewContainer)
 }

@@ -10,7 +10,8 @@ enum Constants {
         static let gridItemMinWidth: CGFloat = 150
         static let gridItemMaxWidth: CGFloat = 180
         static let gridSpacing: CGFloat = 16
-        static let cardCornerRadius: CGFloat = 16
+        static let cardCornerRadius: CGFloat = 12
+        static let hStackItemSpacing: CGFloat = 12
         static let fabSize: CGFloat = 56
         static let fabBottomPadding: CGFloat = 20
     }
@@ -19,6 +20,24 @@ enum Constants {
         static let springResponse: Double = 0.4
         static let springDamping: Double = 0.7
         static let snappyDuration: Double = 0.25
+    }
+
+    enum Canvas {
+        static let minScale: CGFloat = 0.3
+        static let maxScale: CGFloat = 2.5
+        static let maxItemDimension: CGFloat = 150
+        static let selectionBorderWidth: CGFloat = 3
+        static let handleSize: CGFloat = 12
+        static let backgroundColors: [Color] = [
+            .white,
+            Color(red: 0.98, green: 0.98, blue: 0.98),
+            Color(red: 0.95, green: 0.95, blue: 0.97),
+            Color(red: 0.94, green: 0.97, blue: 0.98),
+            Color(red: 0.98, green: 0.96, blue: 0.94),
+            Color(red: 0.96, green: 0.94, blue: 0.96),
+            .black,
+            Color(red: 0.15, green: 0.15, blue: 0.18),
+        ]
     }
 
     enum Strings {

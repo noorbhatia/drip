@@ -11,6 +11,9 @@ struct AddClothingView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
+    // Optional initial image data passed from PhotosPicker
+    var initialImageData: Data? = nil
+
     @State private var name = ""
     @State private var selectedCategory: ClothingCategory = .tops
     @State private var selectedColor: WardrobeColor = .black
@@ -21,6 +24,7 @@ struct AddClothingView: View {
 
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var selectedImageData: Data?
+    @State private var rippleTrigger = 0
 
     private var isFormValid: Bool {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -52,6 +56,11 @@ struct AddClothingView: View {
                     .disabled(!isFormValid)
                 }
             }
+            .task {
+                if let data = initialImageData {
+                    selectedImageData = data
+                }
+            }
         }
     }
 
@@ -60,11 +69,15 @@ struct AddClothingView: View {
             VStack {
                 if let imageData = selectedImageData,
                    let uiImage = UIImage(data: imageData) {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(height: 200)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    GeometryReader { geometry in
+                        Image(uiImage: uiImage)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: geometry.size.width, height: 200)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                           
+                    }
+                    .frame(height: 200)
                 } else {
                     ZStack {
                         RoundedRectangle(cornerRadius: 12)
@@ -92,6 +105,9 @@ struct AddClothingView: View {
             Task {
                 if let data = try? await newValue?.loadTransferable(type: Data.self) {
                     selectedImageData = data
+                    rippleTrigger += 1  // Trigger ripple once
+                    let processedData = (try? await BackgroundRemover.removeBackground(from: data)) ?? data
+                    selectedImageData = processedData
                 }
             }
         }
@@ -158,10 +174,12 @@ struct AddClothingView: View {
                         .foregroundStyle(color == .white || color == .cream || color == .beige ? .black : .white)
                 }
             }
-            .frame(width: 36, height: 36)
+            .frame(width: 44, height: 44)
         }
         .buttonStyle(.plain)
         .sensoryFeedback(.selection, trigger: selectedColor)
+        .accessibilityLabel(color.displayName)
+        .accessibilityAddTraits(selectedColor == color ? .isSelected : [])
     }
 
     private var tagsSection: some View {

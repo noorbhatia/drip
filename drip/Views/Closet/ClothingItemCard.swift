@@ -40,7 +40,7 @@ struct ClothingItemCard: View {
                 if item.isFavorite {
                     Image(systemName: "heart.fill")
                         .font(.caption)
-                        .foregroundStyle(.pink)
+                        .foregroundStyle(.red)
                 }
             }
         }
@@ -55,6 +55,9 @@ struct ClothingItemCard: View {
             isSelected ? .regular.tint(.accentColor) : .regular,
             in: .rect(cornerRadius: Constants.Layout.cardCornerRadius)
         )
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(item.name), \(item.category.displayName)\(item.isFavorite ? ", favorite" : "")")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
     @ViewBuilder

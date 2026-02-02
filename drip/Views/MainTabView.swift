@@ -9,9 +9,6 @@ import SwiftUI
 struct MainTabView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var selectedTab: DripTab = .home
-    @State private var isMenuExpanded = false
-    @State private var showAddClothing = false
-    @State private var showOutfitBuilder = false
 
     enum DripTab {
         case home
@@ -55,37 +52,8 @@ struct MainTabView: View {
     
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            TabView(selection: $selectedTab) {
-                tabs
-            }
-
-            FloatingActionButton(
-                isMenuExpanded: $isMenuExpanded,
-                onAddClothes: { showAddClothing = true },
-                onBuildOutfit: { showOutfitBuilder = true }
-            )
-            .padding(.bottom, 2)
-
-            if isMenuExpanded {
-                Color.black.opacity(0.3)
-                    .ignoresSafeArea()
-                    .onTapGesture {
-                        withAnimation(.snappy(duration: Constants.Animation.snappyDuration)) {
-                            isMenuExpanded = false
-                        }
-                    }
-                    .zIndex(-1)
-            }
-        }
-        .onChange(of: selectedTab) { oldValue, newValue in
-            
-        }
-        .sheet(isPresented: $showAddClothing) {
-            AddClothingView()
-        }
-        .fullScreenCover(isPresented: $showOutfitBuilder) {
-            OutfitBuilderView()
+        TabView(selection: $selectedTab) {
+            tabs
         }
     }
 

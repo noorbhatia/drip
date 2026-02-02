@@ -18,17 +18,18 @@ struct CategoryPill: View {
                 Text(category.displayName)
                     .font(.subheadline.weight(.medium))
             }
-            .padding(.horizontal, 14)
+            .padding(.horizontal, 16)
             .padding(.vertical, 8)
             .foregroundStyle(isSelected ? .white : .primary)
-            .background(isSelected ? Color.accentColor : Color.clear)
-            .clipShape(Capsule())
+            
+            
         }
-        .glassEffect(
-            isSelected ? .regular.tint(.accentColor).interactive() : .regular.interactive(),
-            in: .capsule
-        )
+        .buttonStyle(.bordered)
+        .background(isSelected ? Color.accentColor : Color.clear)
+        .clipShape(.capsule)
         .sensoryFeedback(.selection, trigger: isSelected)
+        .accessibilityLabel("Filter by \(category.displayName)")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 
@@ -40,17 +41,18 @@ struct AllCategoryPill: View {
         Button(action: action) {
             Text("All")
                 .font(.subheadline.weight(.medium))
-                .padding(.horizontal, 14)
+                .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .foregroundStyle(isSelected ? .white : .primary)
-                .background(isSelected ? Color.accentColor : Color.clear)
-                .clipShape(Capsule())
+                
+                
         }
-        .glassEffect(
-            isSelected ? .regular.tint(.accentColor).interactive() : .regular.interactive(),
-            in: .capsule
-        )
+        .buttonStyle(.bordered)
+        .background(isSelected ? Color.accentColor : Color.clear)
+        .clipShape(.capsule)
         .sensoryFeedback(.selection, trigger: isSelected)
+        .accessibilityLabel("Show all items")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
 

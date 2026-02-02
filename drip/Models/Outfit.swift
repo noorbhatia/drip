@@ -17,6 +17,8 @@ final class Outfit {
     var lastWornDate: Date?
     var wearCount: Int
 
+    @Attribute(.externalStorage) var previewImageData: Data?
+
     var items: [ClothingItem]?
 
     var occasion: Occasion {
@@ -28,7 +30,8 @@ final class Outfit {
         name: String,
         occasion: Occasion,
         notes: String? = nil,
-        items: [ClothingItem] = []
+        items: [ClothingItem] = [],
+        previewImageData: Data? = nil
     ) {
         self.id = UUID()
         self.name = name
@@ -38,6 +41,7 @@ final class Outfit {
         self.dateCreated = Date()
         self.lastWornDate = nil
         self.wearCount = 0
+        self.previewImageData = previewImageData
         self.items = items
     }
 
