@@ -30,23 +30,23 @@ struct RecentOutfitsSection: View {
     }
 
     private var emptyState: some View {
-        GlassCard {
-            VStack(spacing: 8) {
-                Image(systemName: "rectangle.stack")
-                    .font(.title)
-                    .foregroundStyle(.secondary)
+        VStack(spacing: 8) {
+            Image(systemName: "rectangle.stack")
+                .font(.title)
+                .foregroundStyle(.secondary)
 
-                Text("No outfits yet")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
+            Text("No outfits yet")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
 
-                Text("Build your first outfit!")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 24)
+            Text("Build your first outfit!")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
         }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 24)
+        .background(.secondary.opacity(0.1))
+        .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
         .padding(.horizontal)
     }
 }
@@ -85,9 +85,8 @@ struct OutfitCard: View {
         }
         .frame(width: 130)
         .padding()
-        .background(.regularMaterial)
+        .background(.secondary.opacity(0.1))
         .clipShape(RoundedRectangle(cornerRadius: Constants.Layout.cardCornerRadius))
-        .glassEffect(.regular, in: .rect(cornerRadius: Constants.Layout.cardCornerRadius))
     }
 }
 

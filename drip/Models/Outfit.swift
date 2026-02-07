@@ -7,7 +7,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Outfit {
+final class Outfit:Identifiable {
     var id: UUID
     var name: String
     var occasionRawValue: String

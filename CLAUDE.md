@@ -26,30 +26,50 @@ This is an iOS SwiftUI wardrobe/outfit management app targeting iOS 26.2+ (iPhon
 ```
 drip/
 ├── dripApp.swift          # Entry point, SwiftData ModelContainer setup
+├── Extensions/
+│   ├── Color+Extensions.swift   # Color luminance, contrast, hex helpers
+│   └── UIImage+Extensions.swift # Dominant color extraction, resizing
 ├── Models/                # SwiftData models and enums
 │   ├── ClothingItem.swift # @Model with image storage, category, color, tags
-│   ├── Outfit.swift       # @Model with ClothingItem relationships
+│   ├── Outfit.swift       # @Model with ClothingItem relationships, wear tracking
 │   ├── Category.swift     # ClothingCategory enum (tops, bottoms, etc.)
 │   ├── WardrobeColor.swift
 │   └── Occasion.swift     # Occasion enum (casual, work, formal, etc.)
 ├── Views/
 │   ├── MainTabView.swift  # Tab navigation (Home, Closet) + FAB
-│   ├── Home/              # HomeView, outfit suggestions, recent outfits
+│   ├── Home/
+│   │   ├── HomeView.swift             # Main home tab with sections
+│   │   ├── OutfitSuggestionCard.swift # Hero card with gradient overlay
+│   │   └── RecentOutfitsSection.swift # Recent outfits + OutfitCard component
 │   ├── Closet/            # ClosetView, grid, filters, add/detail views
-│   ├── OutfitBuilder/     # Outfit creation flow
+│   ├── OutfitBuilder/
+│   │   ├── OutfitBuilderView.swift    # Outfit creation flow
+│   │   ├── OutfitEditorView.swift     # Outfit editor wrapper
+│   │   ├── EditorView.swift           # Canvas-based editor
+│   │   ├── EditorData.swift           # Editor state model
+│   │   ├── ClothingPickerView.swift
+│   │   ├── BackgroundColorPicker.swift
+│   │   └── SaveOutfitView.swift
 │   └── Components/        # Reusable: GlassCard, CategoryPill, FAB, EmptyState
 ├── Services/
-│   ├── WardrobeService.swift        # SwiftData CRUD, queries, @Observable
-│   └── OutfitSuggestionService.swift # Outfit suggestion logic
+│   ├── WardrobeService.swift          # SwiftData CRUD, queries, @Observable
+│   ├── OutfitSuggestionService.swift  # Outfit suggestion logic
+│   └── ClothingImportActor.swift      # @ModelActor for background bulk import
 └── Utilities/
-    ├── Constants.swift    # Layout, animation, and string constants
-    └── PreviewData.swift  # In-memory ModelContainer for previews
+    ├── Constants.swift        # Layout, animation, canvas, and string constants
+    ├── PreviewData.swift      # In-memory ModelContainer for previews
+    ├── BackgroundRemover.swift # Vision framework background removal
+    ├── CameraView.swift       # Camera integration
+    └── RippleEffect.swift     # Disabled (shader removed, code commented out)
 ```
 
 ### Key Patterns
 
 - **SwiftData**: Models use `@Model` macro. Enums stored as raw strings (`categoryRawValue`) with computed property wrappers. Images use `@Attribute(.externalStorage)`.
 - **Services**: `@Observable` classes injected via environment. `WardrobeService` wraps `ModelContext` for data operations.
+- **@ModelActor**: `ClothingImportActor` uses `@ModelActor` for background-thread SwiftData operations (bulk clothing import).
+- **Vision Framework**: `BackgroundRemover` uses `VNGenerateForegroundInstanceMaskRequest` for clothing image background removal.
+- **Extensions**: `UIImage+Extensions` for dominant color extraction; `Color+Extensions` for luminance, contrast ratio, and hex helpers.
 - **Previews**: Use `PreviewData.previewContainer` for in-memory SwiftData in `#Preview` blocks.
 - **Concurrency**: Swift 5.0 strict concurrency with `@MainActor` default isolation.
 
@@ -61,6 +81,9 @@ Schema([ClothingItem.self, Outfit.self])
 ```
 
 `ClothingItem` ↔ `Outfit` have a many-to-many relationship via `@Relationship(inverse:)`.
+
+- `Outfit.previewImageData` uses `@Attribute(.externalStorage)` for outfit preview images.
+- `Outfit.markAsWorn()` updates `lastWornDate` and increments `wearCount` for wear tracking.
 
 ## Symbol Inspection (`monocle` cli)
 

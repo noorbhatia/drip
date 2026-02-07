@@ -110,15 +110,20 @@ Users deeply miss Polyvore (shut down 2018) for:
 
 | App | Strengths | Weaknesses | Pricing |
 |-----|-----------|------------|---------|
-| **Whering** | Free, many features, sustainability focus | Clunky UI, neon colors, no weather | Free |
-| **Acloset** | Clean design, AI suggestions | 100 item limit free, crowded interface | Freemium |
+| **Alta** | TIME 2025 Best Invention, AI avatar try-on, weather+calendar suggestions, featured in Vogue/ELLE/NBC | Subscription-only, AI can be hit-or-miss | Subscription |
+| **Whering** | Free, 9M+ users, Dragon's Den featured, many features, sustainability focus | Clunky UI, neon colors, no weather | Free |
+| **Acloset** | Clean design, AI suggestions, 42% user growth | 100 item limit free, crowded interface, complaints increasing | Freemium |
 | **Stylebook** | Deep stats, one-time purchase, OG app | iOS only, steep learning curve, unmaintained | $4.99 one-time |
 | **Indyx** | Human stylists, clean UI | Stats locked behind subscription | Subscription |
 | **Fits** | Polyvore-like collages, virtual try-on | Limited wardrobe stats | Freemium |
 | **OpenWardrobe** | Sustainability tracking, repairs ecosystem | Missing customization options | Freemium |
 | **Combyne** | Social/sharing focus | No planning features, can't view items without sharing | Free |
-| **Cladwell** | Smart closet, 1M+ downloads, weather integration | Subscription model | Subscription |
+| **Cladwell** | Smart closet, 1M+ downloads, weather integration, added ChatGPT integration | Subscription model, still poor quality AI | Subscription |
 | **Pureple** | Free, simple | Buggy, heavy ads | Free with ads |
+| **XLook** | "Most advanced AI styling," modern UI | Expensive, new/unproven | $9.99/month |
+| **Closetly** | AI-focused styling | "Very poor" AI quality, called a "money grab" by users | Subscription |
+| **Vestique** | Unworn-item notifications, daily "fit checks" | Niche feature set | Freemium |
+| **SimpleCloset** | Simple, clean UI | 30-item free cap (very restrictive) | Freemium |
 
 ### Market Gap
 
@@ -156,42 +161,53 @@ No app successfully combines:
 
 ## Feature Prioritization
 
-### Phase 1: Quick Wins (High Impact, Low Effort)
-1. Add "Wore Today" button - Enable wear tracking
-2. Edit existing items - Critical missing CRUD operation
-3. Enhanced wardrobe stats - Most/least worn, utilization %
+*Reordered based on user validation research (15+ sources, Reddit/web analysis)*
 
-### Phase 2: Core Differentiators (High Impact, Medium Effort)
-1. Cost-per-wear tracking
-2. Outfit calendar
-3. Smart outfit suggestions (based on actual wardrobe)
-4. Weather integration
+### P0: Quick Wins (Validated Highest Demand)
+1. **"Wore Today" quick logging** — 1-2 taps, no photo required. Stylebook user with 2,700 logged outfits validates demand. Outfit Tracker app built entirely around this concept.
+2. **Wire smart hero card** — Daily suggestion is the #1 retention driver. Apps with it see 3.7x weekly opens (Alta data).
+3. **Edit existing items** — Critical missing CRUD operation.
 
-### Phase 3: Delight Features (Differentiation)
+### P1: Core Features (Strongly Validated)
+1. **Wardrobe analytics/stats** — "My favorite part of the app is all the style stats!" Power-user magnet. Indyx users angry analytics are paywalled. Keep basics free.
+2. **"Rediscover" forgotten items** — Users go from 30% → 69% wardrobe utilization with tracking. Fits, OpenWardrobe, Harper's Bazaar all highlight this.
+3. **Outfit calendar/planner** — Every competitor has it. Table-stakes, not a differentiator alone.
+4. **Cost-per-wear tracking** — Needs `purchasePrice` model field. Users find it "oddly satisfying."
+
+### P2: Differentiation (Validated but Higher Effort)
+1. **Weather integration** — Highest-priority Phase 2. Every top-rated app (Alta, Cladwell, Acloset) uses it. Needs WeatherKit.
+2. **Smart outfit suggestions** — Start rule-based, NOT AI. Bad AI destroys trust (Closetly, Cladwell prove this).
+3. **Occasion-based filtering for suggestions**
+4. **Packing / travel mode** — Alta users praise this.
+
+### P3: Delight Features
 1. Repair/cleaning flags
 2. Outfit templates / copy & edit
 3. Layering preview in outfit builder
 4. Size/fit tracking
 
-### Phase 4: Growth Features (If Pursuing Social)
+### P4: Growth Features
 1. Share outfit as image
 2. Community feed
 3. Brand integration / resale value tracking
 
 ### Priority Matrix
 
-| Feature | Impact | Effort | Priority |
-|---------|--------|--------|----------|
-| Log outfit "Wore Today" | High | Low | **P0** |
-| Edit existing items | High | Medium | **P0** |
-| Cost-per-wear tracking | High | Medium | **P1** |
-| Enhanced analytics | High | Low | **P1** |
-| Outfit calendar | High | Medium | **P1** |
-| Smart suggestions from wardrobe | High | Medium | **P2** |
-| Weather integration | Medium | Medium | **P2** |
-| Repair/cleaning flags | Medium | Low | **P2** |
-| Duplicate outfit | Medium | Low | **P2** |
-| Layering canvas | High | Large | **P3** |
+| Feature | Impact | Effort | Priority | Validation |
+|---------|--------|--------|----------|------------|
+| Log outfit "Wore Today" | High | Low | **P0** | Stylebook 2,700-outfit user |
+| Smart hero / daily pick | High | Low | **P0** | 3.7x weekly opens (Alta) |
+| Edit existing items | High | Medium | **P0** | Core CRUD gap |
+| Wardrobe analytics | High | Low | **P1** | Power-user #1 retention feature |
+| Rediscover forgotten items | High | Low | **P1** | 30→69% utilization improvement |
+| Outfit calendar | High | Medium | **P1** | Table-stakes across competitors |
+| Cost-per-wear tracking | High | Medium | **P1** | Needs purchasePrice field |
+| Weather integration | High | Medium | **P2** | #1 requested contextual feature |
+| Smart suggestions | High | Medium | **P2** | Start rule-based, not AI |
+| Packing / travel mode | Medium | Medium | **P2** | Alta users praise |
+| Repair/cleaning flags | Medium | Low | **P3** | Nice-to-have |
+| Duplicate outfit | Medium | Low | **P3** | Nice-to-have |
+| Layering canvas | High | Large | **P3** | Polyvore nostalgia |
 
 ---
 
@@ -229,6 +245,41 @@ Offer a generous free tier with unlimited items. Monetize through:
 
 ---
 
+## Market Data
+
+- **Market size:** $1.5B (2024) → $5.3-9.9B by 2033
+- **CAGR:** 15-16%
+- **Key driver:** Gen Z digital-first fashion management
+- **Alta milestone:** TIME Best Inventions 2025, Fast Company "Next Big Things in Tech"
+
+---
+
+## Retention Insights
+
+| Insight | Data Point | Source |
+|---------|-----------|--------|
+| Daily suggestion = retention | 3.7x weekly opens with daily outfit suggestion | Alta user data |
+| Gen Z engagement | 64% weekly app usage among Gen Z users | DRESSX/Accio research |
+| Wear tracking stickiness | Power users log 2,700+ outfits over app lifetime | Stylebook reviews |
+| Utilization improvement | Users go from 30% → 69% wardrobe utilization | OpenWardrobe/Harper's Bazaar |
+| Bad AI = churn | Apps with poor AI suggestions see 1-star review spikes | Closetly, Cladwell reviews |
+
+---
+
+## Reddit/User Research Log
+
+| Date | Source | Key Finding |
+|------|--------|-------------|
+| 2026-02 | r/femalefashionadvice | Stylebook power user: 2,700 outfits logged; stats are the #1 reason to stay |
+| 2026-02 | r/capsulewardrobe | Users want "Rediscover" feature — forgotten items = wasted money |
+| 2026-02 | Alta App Store reviews | Daily suggestion cited as reason for daily opens |
+| 2026-02 | Whering App Store reviews | 9M+ users but UI complaints persist; free model praised |
+| 2026-02 | Closetly reviews | "Very poor AI" — users warn others away; bad AI worse than no AI |
+| 2026-02 | Indyx Substack review | 4-month deep review: analytics paywall frustrates power users |
+| 2026-02 | Style Within Grace | Detailed Whering + Acloset comparisons; onboarding friction highlighted |
+
+---
+
 ## Sources
 
 - [Fits - Top 10 Polyvore Alternatives](https://www.fits-app.com/posts/top-10-polyvore-alternatives-the-ultimate-review)
@@ -249,6 +300,18 @@ Offer a generous free tier with unlimited items. Monetize through:
 - [App Store - Acloset Reviews](https://apps.apple.com/us/app/acloset-ai-fashion-assistant/id1542311809)
 - [App Store - Whering Reviews](https://apps.apple.com/us/app/whering-your-digital-closet/id1519461680)
 - [App Store - Stylebook Reviews](https://apps.apple.com/us/app/stylebook/id335709058)
+- [Alta User Reviews](https://www.altadaily.com/blog/user-reviews)
+- [ELLE: Alta App Interview](https://www.elle.com/fashion/personal-style/a69018749/jenny-wang-alta-app-ai-fashion-interview-2025/)
+- [TIME/Fast Company: Alta Best Inventions 2025](https://markets.financialcontent.com/stocks/article/abnewswire-2025-10-22)
+- [Style Within Grace: Whering Review](https://stylewithingrace.com/whering-wardrobe-app-review/)
+- [Style Within Grace: Acloset Review](https://stylewithingrace.com/acloset-review/)
+- [Cladwell Complete Review](https://thelaurieloo.com/blog/cladwell-review)
+- [Indyx Honest Review (4 months)](https://thejuliastyleedit.substack.com/p/4-months-with-the-indyx-app-my-honest)
+- [Digital Wardrobe Statistics 2025](https://bestcolorfulsocks.com/blogs/news/digital-wardrobe-management-statistics)
+- [Wardrobe App Market 2025-2032](https://www.intelmarketresearch.com/wardrobe-app-2025-2032-667-1709)
+- [Harper's Bazaar: Whering](https://www.harpersbazaar.com/uk/fashion/what-to-wear/a36228188/whering-app/)
+- [9to5Mac: Wardrobe Apps](https://9to5mac.com/2023/02/13/wardrobe-apps/)
+- [Wardrobe App Comparison](http://www.kathrynsturges.com/home/2025/4/8/comparison-between-wardrobe-apps)
 
 ---
 
@@ -257,7 +320,8 @@ Offer a generous free tier with unlimited items. Monetize through:
 | Date | Topic | Key Findings |
 |------|-------|--------------|
 | 2026-01-25 | Initial market research | Identified top pain points, competitive gaps, Polyvore nostalgia factor |
+| 2026-02-07 | User validation research | Cross-referenced 15+ sources; validated all 5 planned features; identified Alta as key competitor |
 
 ---
 
-*Last updated: January 25, 2026*
+*Last updated: February 7, 2026*
