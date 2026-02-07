@@ -14,6 +14,12 @@ enum Constants {
         static let hStackItemSpacing: CGFloat = 12
         static let fabSize: CGFloat = 56
         static let fabBottomPadding: CGFloat = 20
+        static let heroCardHeight: CGFloat = 350
+        static let outfitCollectionItemWidth: CGFloat = 200
+        static let outfitCollectionItemHeight: CGFloat = 250
+        static let categoryItemSize: CGFloat = 120
+        static let recentItemSize: CGFloat = 80
+        static let sectionSpacing: CGFloat = 24
     }
 
     enum Animation {
