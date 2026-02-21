@@ -10,11 +10,12 @@ This document contains market research, user pain points, competitor analysis, a
 3. [Most Requested Features](#most-requested-features)
 4. [The Polyvore Factor](#the-polyvore-factor)
 5. [Competitive Landscape](#competitive-landscape)
-6. [Target User Personas](#target-user-personas)
-7. [Feature Prioritization](#feature-prioritization)
-8. [Key Metrics to Target](#key-metrics-to-target)
-9. [Monetization Insights](#monetization-insights)
-10. [Sources](#sources)
+6. [Competitor Review Analysis](#competitor-review-analysis)
+7. [Target User Personas](#target-user-personas)
+8. [Feature Prioritization](#feature-prioritization)
+9. [Key Metrics to Target](#key-metrics-to-target)
+10. [Monetization Insights](#monetization-insights)
+11. [Sources](#sources)
 
 ---
 
@@ -134,6 +135,114 @@ No app successfully combines:
 - ✅ Clean, modern Apple-native UI
 - ✅ Occasion-based smart suggestions
 - ✅ No aggressive paywalls or ads
+
+---
+
+## Competitor Review Analysis
+
+*Analysis of App Store and Play Store reviews for key competitors, capturing what users love and hate.*
+
+### Alta (4.9★ — [App Store](https://apps.apple.com/us/app/alta-daily-digital-ai-closet/id6481705400))
+
+**What Users Love:**
+- AI outfit generation — "creates creative outfit combinations I'd never think of on my own"
+- Background removal described as "painless" and efficient
+- Virtual avatar try-on that accurately reflects user appearance
+- Travel packing lists with luggage size estimation
+- Tracks worn vs. unworn items — "helps me stay organized with what I've worn (and haven't worn)"
+- Free pricing highlighted as major advantage
+- Responsive, human customer engagement from developers
+- Described as "extremely easy to get the hang of"
+
+**What Users Complain About:**
+- No "clothes in storage" feature for out-of-season items
+- Limited category options — can't add "bras" as separate from tops
+- No seasonal capsule organization (one large closet only)
+- Occasionally suggests items users don't actually own
+- Desire for more granular thumbs-down feedback on AI mismatches
+
+---
+
+### Whering (4.7★ — [App Store](https://apps.apple.com/us/app/whering-your-digital-closet/id1519461680) · [Play Store](https://play.google.com/store/apps/details?id=com.whering.app))
+
+**What Users Love:**
+- "Looks the cleanest out of all the digital closet apps"
+- Automatic background removal and image resizing
+- Outfit planning with calendar integration
+- "Dress Me" outfit randomizer feature
+- Sustainability features — refurbishment, donation, ethical shopping options
+- Logically laid out wardrobe management
+
+**What Users Complain About:**
+- "Way too glitchy" — filters don't work, items won't show in searches
+- Data loss — uploaded clothing items disappear after updates
+- Auto-tagging misclassifies items; manual correction needed
+- Outfit sorter doesn't filter properly when creating outfits
+- Limited customization — can't add personal brands or custom categories
+- Color selection too narrow (limited pink/green shades)
+- Null check errors when saving outfits
+- Poor customer support — unanswered chat requests
+- Clicking an item and exiting takes you back to the top of your list
+
+---
+
+### Acloset (4.3★ — [App Store](https://apps.apple.com/us/app/acloset-ai-fashion-assistant/id1542311809) · [Play Store](https://play.google.com/store/apps/details?id=com.looko.acloset))
+
+**What Users Love:**
+- "Super easy to add your closet" — quick photo uploading from phone or web
+- AI auto-categorization and background removal work well
+- Calendar feature for planning and tracking outfit wear history
+- Weather-based outfit recommendations
+- Search/filter by color, category, pattern, material, season
+- Clean, intuitive interface
+
+**What Users Complain About:**
+- Data loss — "My account and clothes are gone... massive waste of my time"
+- 100 item free cap widely criticized — "limiting for people with bigger wardrobes"
+- Images fail to load in outfit suggestions — "never load up so idk what to choose"
+- AI creates "nonsensical outfit pairings" and ignores portions of closet
+- Random outfit feature shows off-season items despite seasonal tags
+- Try-on feature crashes with transparent backgrounds
+- Rarely suggests footwear with outfits
+- Long-time users report unfixed bugs despite multiple reports
+- Recent introduction of ads frustrated existing users
+
+---
+
+### Fits (4.6★ — [App Store](https://apps.apple.com/us/app/fits-outfit-planner-closet/id6447482321))
+
+**What Users Love:**
+- AI auto-detection of colors, categories, and brands
+- Helped organize "cute outfits from the chaos" in one hour
+- "The easiest way to create outfits with your own clothes"
+- Swiping mechanism and layering capabilities for outfit creation
+- Background removal and color editing tools called "amazing"
+- Packing list with "mannequin carousel and ability to resize"
+- Developer actively responds to feedback with fixes
+
+**What Users Complain About:**
+- Limited categorization — no subcategories for jewelry (earrings, rings, necklaces)
+- Have to "scroll for an hour" through jumbled categories to find items
+- Forced social features — "I don't care about anyone else's outfits... I simply want to look at my own clothes"
+- Must manually mark outfits as private after each creation
+- Recent UI changes made calendar integration "clunkier"
+- Separating clothing from outfits in packing lists called "the least functional thing ever"
+- Subscription paywall limits access to features
+
+---
+
+### Cross-App Insights
+
+| Theme | Alta | Whering | Acloset | Fits | Drip Opportunity |
+|-------|------|---------|---------|------|-----------------|
+| **Data reliability** | Stable | Data loss reported | Data loss reported | Stable | Reliable local-first storage is a differentiator |
+| **Background removal** | Excellent | Good | Good | Excellent | Match Alta/Fits quality — this is table stakes |
+| **AI suggestions** | Good (with feedback loop) | Basic randomizer | Poor (nonsensical pairings) | N/A | Start rule-based; avoid bad AI (worse than none) |
+| **Category flexibility** | Limited | Limited | Decent | Limited | Custom categories/subcategories = quick win |
+| **Free tier generosity** | Fully free | Free | 100 item cap | Freemium | Unlimited free items, monetize premium features |
+| **Bug/stability** | Solid | Very buggy | Buggy | Mostly solid | Stability and polish = trust builder |
+| **Calendar/planning** | Has it | Has it | Has it | Has it | Table stakes — must have |
+| **Privacy/social** | Optional | Social-heavy | Minimal | Forced social | Keep social optional; privacy-first default |
 
 ---
 

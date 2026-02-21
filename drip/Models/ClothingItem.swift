@@ -18,8 +18,6 @@ final class ClothingItem {
     var notes: String?
     var isFavorite: Bool
     var dateAdded: Date
-    var lastWornDate: Date?
-    var wearCount: Int
 
     @Relationship(inverse: \Outfit.items)
     var outfits: [Outfit]?
@@ -32,6 +30,17 @@ final class ClothingItem {
     var color: WardrobeColor {
         get { WardrobeColor(rawValue: colorRawValue) ?? .black }
         set { colorRawValue = newValue.rawValue }
+    }
+
+    var wearCount: Int {
+        let allLogs = outfits?.flatMap { $0.logs ?? [] } ?? []
+        return allLogs.filter { $0.type == .worn }.count
+    }
+
+    var lastWornDate: Date? {
+        let allLogs = outfits?.flatMap { $0.logs ?? [] } ?? []
+        return allLogs.filter { $0.type == .worn }
+            .max(by: { $0.date < $1.date })?.date
     }
 
     init(
@@ -54,13 +63,6 @@ final class ClothingItem {
         self.notes = notes
         self.isFavorite = isFavorite
         self.dateAdded = Date()
-        self.lastWornDate = nil
-        self.wearCount = 0
         self.outfits = []
-    }
-
-    func markAsWorn() {
-        lastWornDate = Date()
-        wearCount += 1
     }
 }

@@ -100,6 +100,40 @@ final class WardrobeService {
         outfits.filter { $0.isFavorite }
     }
 
+    func outfitsPlanned(for date: Date) -> [Outfit] {
+        outfits.filter { outfit in
+            outfit.logs?.contains { log in
+                log.type == .planned && Calendar.current.isDate(log.date, inSameDayAs: date)
+            } ?? false
+        }
+    }
+
+    func outfitsWorn(on date: Date) -> [Outfit] {
+        outfits.filter { outfit in
+            outfit.logs?.contains { log in
+                log.type == .worn && Calendar.current.isDate(log.date, inSameDayAs: date)
+            } ?? false
+        }
+    }
+
+    func planOutfit(_ outfit: Outfit, for date: Date) {
+        let log = OutfitLog(type: .planned, date: date, outfit: outfit)
+        modelContext.insert(log)
+        saveContext()
+        fetchOutfits()
+    }
+
+    func unplanOutfit(_ outfit: Outfit, for date: Date) {
+        let logsToDelete = outfit.logs?.filter { log in
+            log.type == .planned && Calendar.current.isDate(log.date, inSameDayAs: date)
+        } ?? []
+        for log in logsToDelete {
+            modelContext.delete(log)
+        }
+        saveContext()
+        fetchOutfits()
+    }
+
     private func saveContext() {
         do {
             try modelContext.save()

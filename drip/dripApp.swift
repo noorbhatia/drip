@@ -13,7 +13,8 @@ struct dripApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             ClothingItem.self,
-            Outfit.self
+            Outfit.self,
+            OutfitLog.self
         ])
         let modelConfiguration = ModelConfiguration(
             schema: schema,

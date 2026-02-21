@@ -28,11 +28,16 @@ drip/
 ├── dripApp.swift          # Entry point, SwiftData ModelContainer setup
 ├── Extensions/
 │   ├── Color+Extensions.swift   # Color luminance, contrast, hex helpers
+│   ├── Date+Extensions.swift    # Date formatting and calendar helpers
+│   ├── Month+Extensions.swift   # Month display utilities
 │   └── UIImage+Extensions.swift # Dominant color extraction, resizing
 ├── Models/                # SwiftData models and enums
+│   ├── CalendarData.swift # Calendar outfit planning data
 │   ├── ClothingItem.swift # @Model with image storage, category, color, tags
-│   ├── Outfit.swift       # @Model with ClothingItem relationships, wear tracking
+│   ├── Outfit.swift       # @Model with ClothingItem relationships, logs
+│   ├── OutfitLog.swift    # @Model for planned/worn events (calendar integration)
 │   ├── Category.swift     # ClothingCategory enum (tops, bottoms, etc.)
+│   ├── ScrollInfo.swift   # Scroll state tracking
 │   ├── WardrobeColor.swift
 │   └── Occasion.swift     # Occasion enum (casual, work, formal, etc.)
 ├── Views/
@@ -41,6 +46,11 @@ drip/
 │   │   ├── HomeView.swift             # Main home tab with sections
 │   │   ├── OutfitSuggestionCard.swift # Hero card with gradient overlay
 │   │   └── RecentOutfitsSection.swift # Recent outfits + OutfitCard component
+│   ├── Calendar/          # Outfit calendar planning
+│   │   ├── CalendarView.swift         # Monthly calendar grid
+│   │   ├── CalendarDayCell.swift      # Individual day cell
+│   │   ├── DayDetailView.swift        # Day detail/outfit assignment
+│   │   └── OutfitPickerSheet.swift    # Outfit selection for calendar
 │   ├── Closet/            # ClosetView, grid, filters, add/detail views
 │   ├── OutfitBuilder/
 │   │   ├── OutfitBuilderView.swift    # Outfit creation flow
@@ -77,13 +87,15 @@ drip/
 
 ```swift
 // Registered in dripApp.swift
-Schema([ClothingItem.self, Outfit.self])
+Schema([ClothingItem.self, Outfit.self, OutfitLog.self])
 ```
 
 `ClothingItem` ↔ `Outfit` have a many-to-many relationship via `@Relationship(inverse:)`.
+`Outfit` → `OutfitLog` is a one-to-many relationship with cascade delete.
 
 - `Outfit.previewImageData` uses `@Attribute(.externalStorage)` for outfit preview images.
-- `Outfit.markAsWorn()` updates `lastWornDate` and increments `wearCount` for wear tracking.
+- `OutfitLog` tracks planned and worn events per outfit (supports multiple dates per outfit).
+- `Outfit.lastWornDate`, `Outfit.wearCount`, `ClothingItem.wearCount`, `ClothingItem.lastWornDate` are computed from `OutfitLog` entries.
 
 ## Symbol Inspection (`monocle` cli)
 
@@ -101,20 +113,8 @@ Schema([ClothingItem.self, Outfit.self])
   - `--context-lines N` includes N lines of context around the definition (default 2).
 - Use `monocle` especially for symbols involved in errors/warnings or coming from external package dependencies.
 
-## Available Skills
+## Environment
 
-This project has Swift and Apple-specific skills available via slash commands. Use these for specialized guidance:
-
-| Skill | Command | Use For |
-|-------|---------|---------|
-| Swift Programming | `/programming-swift` | Swift language syntax, features, compiler errors |
-| Swift Concurrency | `/swift-concurrency` | async/await, actors, Sendable, isolation |
-| SwiftUI Animations | `/swiftui-animation` | Animations, transitions, matched geometry, Metal shaders |
-| SwiftUI Liquid Glass | `/swiftui-liquid-glass` | iOS 26+ Liquid Glass API adoption |
-| SwiftUI Performance | `/swiftui-performance-audit` | Diagnose slow rendering, excessive updates |
-| SwiftUI View Refactor | `/swiftui-view-refactor` | View structure, dependency injection, @Observable |
-| Apple HIG Designer | `/apple-hig-designer` | Human Interface Guidelines compliance |
-| Apple Docs Research | `/apple-docs-research` | Official Apple documentation and WWDC sessions |
-| Xcode Build | `/xcode-build` | xcodebuild, simulators, UI tests |
-| Xcode Cloud | `/xcode-cloud` | CI/CD workflows, custom build scripts |
-| App Store Optimization | `/app-store-optimisation` | Keywords, metadata, competitor analysis |
+- Xcode 26+ (iOS 26.2 SDK)
+- `monocle` CLI must be running (used for symbol inspection — see below)
+- No SPM dependencies — pure Apple frameworks
