@@ -54,7 +54,7 @@ enum PreviewData {
     ]
 
     static var previewContainer: ModelContainer {
-        let schema = Schema([ClothingItem.self, Outfit.self])
+        let schema = Schema([ClothingItem.self, Outfit.self, OutfitLog.self])
         let configuration = ModelConfiguration(isStoredInMemoryOnly: true)
         do {
             let container = try ModelContainer(for: schema, configurations: [configuration])

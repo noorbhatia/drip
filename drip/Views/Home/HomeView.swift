@@ -13,6 +13,7 @@ struct HomeView: View {
 
     @State private var suggestionService = OutfitSuggestionService()
     @State private var showOutfitBuilder = false
+    @State private var showCalendar = false
     @State private var selectedOccasion: Occasion?
     @State private var woreOutfitID: UUID?
 
@@ -151,6 +152,9 @@ struct HomeView: View {
             .fullScreenCover(isPresented: $showOutfitBuilder) {
                 OutfitBuilderView(preselectedOccasion: selectedOccasion)
             }
+            .fullScreenCover(isPresented: $showCalendar) {
+                CalendarView()
+            }
         }
     }
 
@@ -211,7 +215,7 @@ struct HomeView: View {
 
     private var calendarCTABanner: some View {
         Button {
-            showOutfitBuilder = true
+            showCalendar = true
         } label: {
             HStack(spacing: 12) {
                 Image(systemName: "calendar")
@@ -505,7 +509,9 @@ struct HomeView: View {
 
                 // "Wore Today" button
                 Button {
-                    outfit.markAsWorn()
+                    let log = OutfitLog(type: .worn, date: Date(), outfit: outfit)
+                    modelContext.insert(log)
+                    try? modelContext.save()
                     woreOutfitID = outfit.id
                     UIImpactFeedbackGenerator(style: .light).impactOccurred()
 

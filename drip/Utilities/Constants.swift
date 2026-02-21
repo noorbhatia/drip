@@ -56,6 +56,10 @@ enum Constants {
         static let emptyClosetMessage = "Start by adding your first clothing item"
         static let emptyOutfitsTitle = "No outfits yet"
         static let emptyOutfitsMessage = "Create your first outfit from your wardrobe"
+        static let calendarTitle = "Calendar"
+        static let planOutfit = "Plan an Outfit"
+        static let plannedSection = "Planned"
+        static let wornSection = "Worn"
     }
 
     static func timeBasedGreeting() -> String {
