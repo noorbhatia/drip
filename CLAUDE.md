@@ -27,19 +27,20 @@ This is an iOS SwiftUI wardrobe/outfit management app targeting iOS 26.2+ (iPhon
 drip/
 ├── dripApp.swift          # Entry point, SwiftData ModelContainer setup
 ├── Extensions/
-│   ├── Color+Extensions.swift   # Color luminance, contrast, hex helpers
+│   ├── Color+Extensions.swift   # Color luminance, contrast, hex init/helpers
 │   ├── Date+Extensions.swift    # Date formatting and calendar helpers
 │   ├── Month+Extensions.swift   # Month display utilities
 │   └── UIImage+Extensions.swift # Dominant color extraction, resizing
 ├── Models/                # SwiftData models and enums
 │   ├── CalendarData.swift # Calendar outfit planning data
-│   ├── ClothingItem.swift # @Model with image storage, category, color, tags
-│   ├── Outfit.swift       # @Model with ClothingItem relationships, logs
-│   ├── OutfitLog.swift    # @Model for planned/worn events (calendar integration)
-│   ├── Category.swift     # ClothingCategory enum (tops, bottoms, etc.)
-│   ├── ScrollInfo.swift   # Scroll state tracking
-│   ├── WardrobeColor.swift
-│   └── Occasion.swift     # Occasion enum (casual, work, formal, etc.)
+│   ├── ClothingItem.swift      # @Model with image storage, category, wardrobeColor relationship, tags
+│   ├── Outfit.swift            # @Model with ClothingItem relationships, occasion relationship, logs
+│   ├── OutfitLog.swift         # @Model for planned/worn events (calendar integration)
+│   ├── Category.swift          # ClothingCategory enum (tops, bottoms, etc.)
+│   ├── ScrollInfo.swift        # Scroll state tracking
+│   ├── WardrobeColor.swift     # @Model with hex color, sortOrder (was enum)
+│   ├── Occasion.swift          # @Model with systemImage, suggestionDescription, sortOrder (was enum)
+│   └── SchemaVersioning.swift  # DripSchemaV1 + DripMigrationPlan
 ├── Views/
 │   ├── MainTabView.swift  # Tab navigation (Home, Closet) + FAB
 │   ├── Home/
@@ -75,7 +76,7 @@ drip/
 
 ### Key Patterns
 
-- **SwiftData**: Models use `@Model` macro. Enums stored as raw strings (`categoryRawValue`) with computed property wrappers. Images use `@Attribute(.externalStorage)`.
+- **SwiftData**: Models use `@Model` macro. `ClothingCategory` enum stored as raw string (`categoryRawValue`) with computed wrapper. `WardrobeColor` and `Occasion` are `@Model` classes (not enums) with `@Attribute(.unique)` names, seeded at launch. Images use `@Attribute(.externalStorage)`.
 - **Services**: `@Observable` classes injected via environment. `WardrobeService` wraps `ModelContext` for data operations.
 - **@ModelActor**: `ClothingImportActor` uses `@ModelActor` for background-thread SwiftData operations (bulk clothing import).
 - **Vision Framework**: `BackgroundRemover` uses `VNGenerateForegroundInstanceMaskRequest` for clothing image background removal.
@@ -86,16 +87,24 @@ drip/
 ### SwiftData Schema
 
 ```swift
-// Registered in dripApp.swift
-Schema([ClothingItem.self, Outfit.self, OutfitLog.self])
+// Registered in DripSchemaV1 and dripApp.swift
+Schema([ClothingItem.self, Outfit.self, OutfitLog.self, Brand.self, WardrobeColor.self, Occasion.self])
 ```
 
-`ClothingItem` ↔ `Outfit` have a many-to-many relationship via `@Relationship(inverse:)`.
-`Outfit` → `OutfitLog` is a one-to-many relationship with cascade delete.
+**Relationships:**
+- `ClothingItem` ↔ `Outfit`: many-to-many via `@Relationship(inverse:)` on `ClothingItem.outfits`
+- `ClothingItem` → `WardrobeColor`: many-to-one (nullify), inverse on `WardrobeColor.clothingItems`
+- `ClothingItem` → `Brand`: many-to-one (nullify), inverse on `Brand.clothingItems`
+- `Outfit` → `Occasion`: many-to-one (nullify), inverse on `Occasion.outfits`
+- `Outfit` → `OutfitLog`: one-to-many (cascade), inverse on `OutfitLog.outfit`
 
+**Notes:**
+- `WardrobeColor` and `Occasion` defaults are seeded via `seedDefaultsIfNeeded(in:)` at app launch (checks `fetchCount == 0`).
+- `DripSchemaV1` + `DripMigrationPlan` in `SchemaVersioning.swift` establish versioned schema baseline.
 - `Outfit.previewImageData` uses `@Attribute(.externalStorage)` for outfit preview images.
 - `OutfitLog` tracks planned and worn events per outfit (supports multiple dates per outfit).
 - `Outfit.lastWornDate`, `Outfit.wearCount`, `ClothingItem.wearCount`, `ClothingItem.lastWornDate` are computed from `OutfitLog` entries.
+- Indexes on `ClothingItem` (dateAdded, categoryRawValue, isFavorite), `Outfit` (dateCreated), `OutfitLog` (date, typeRawValue, compound).
 
 ## Symbol Inspection (`monocle` cli)
 

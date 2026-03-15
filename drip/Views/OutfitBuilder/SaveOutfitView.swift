@@ -15,9 +15,10 @@ struct SaveOutfitView: View {
     var onSave: (() -> Void)?
 
     @Query private var allItems: [ClothingItem]
+    @Query(sort: \Occasion.sortOrder) private var allOccasions: [Occasion]
 
     @State private var outfitName = ""
-    @State private var selectedOccasion: Occasion = .casual
+    @State private var selectedOccasion: Occasion?
     @State private var notes = ""
     @State private var isSaving = false
     @State private var previewImage: UIImage?
@@ -54,6 +55,9 @@ struct SaveOutfitView: View {
         .task {
             let canvasRect = CGRect(origin: .zero, size: editorData.canvasSize)
             previewImage = await editorData.exportAsImage(canvasRect)
+            if selectedOccasion == nil {
+                selectedOccasion = allOccasions.first { $0.name == Occasion.Names.casual }
+            }
         }
     }
 
@@ -84,9 +88,10 @@ struct SaveOutfitView: View {
     private var occasionSection: some View {
         Section("Occasion") {
             Picker("Occasion", selection: $selectedOccasion) {
-                ForEach(Occasion.allCases) { occasion in
+                Text("None").tag(Occasion?.none)
+                ForEach(allOccasions) { occasion in
                     Label(occasion.displayName, systemImage: occasion.systemImage)
-                        .tag(occasion)
+                        .tag(Occasion?.some(occasion))
                 }
             }
             .pickerStyle(.navigationLink)

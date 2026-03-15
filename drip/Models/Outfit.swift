@@ -8,24 +8,23 @@ import SwiftData
 
 @Model
 final class Outfit: Identifiable {
+    #Index<Outfit>([\.dateCreated])
+
     var id: UUID
     var name: String
-    var occasionRawValue: String
     var notes: String?
     var isFavorite: Bool
     var dateCreated: Date
 
     @Attribute(.externalStorage) var previewImageData: Data?
 
+    var occasion: Occasion?
+
+    @Relationship(deleteRule: .nullify)
     var items: [ClothingItem]?
 
     @Relationship(deleteRule: .cascade, inverse: \OutfitLog.outfit)
     var logs: [OutfitLog]?
-
-    var occasion: Occasion {
-        get { Occasion(rawValue: occasionRawValue) ?? .casual }
-        set { occasionRawValue = newValue.rawValue }
-    }
 
     var lastWornDate: Date? {
         logs?.filter { $0.type == .worn }
@@ -43,17 +42,21 @@ final class Outfit: Identifiable {
     var wornDates: [Date] {
         logs?.filter { $0.type == .worn }.map(\.date) ?? []
     }
-
+    
+    var price: Decimal? {
+        items?.compactMap(\.price).reduce(0, +) ?? 0
+    }
+    
     init(
         name: String,
-        occasion: Occasion,
+        occasion: Occasion? = nil,
         notes: String? = nil,
         items: [ClothingItem] = [],
         previewImageData: Data? = nil
     ) {
         self.id = UUID()
         self.name = name
-        self.occasionRawValue = occasion.rawValue
+        self.occasion = occasion
         self.notes = notes
         self.isFavorite = false
         self.dateCreated = Date()

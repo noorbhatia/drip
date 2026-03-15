@@ -28,7 +28,7 @@ struct ClothingItemCard: View {
 
             HStack {
                 Circle()
-                    .fill(item.color.color)
+                    .fill(item.wardrobeColor?.swiftUIColor ?? .gray)
                     .frame(width: 14, height: 14)
                     .overlay(
                         Circle()
@@ -69,7 +69,7 @@ struct ClothingItemCard: View {
                 .scaledToFill()
         } else {
             ZStack {
-                item.color.color.opacity(0.3)
+                (item.wardrobeColor?.swiftUIColor ?? .gray).opacity(0.3)
                 Image(systemName: item.category.systemImage)
                     .font(.largeTitle)
                     .foregroundStyle(.secondary)

@@ -33,7 +33,7 @@ struct ClosetView: View {
             let lowercasedQuery = searchText.lowercased()
             items = items.filter { item in
                 item.name.lowercased().contains(lowercasedQuery) ||
-                item.brand?.lowercased().contains(lowercasedQuery) == true ||
+                item.brand?.name.lowercased().contains(lowercasedQuery) == true ||
                 item.tags.contains { $0.lowercased().contains(lowercasedQuery) }
             }
         }
@@ -169,8 +169,12 @@ struct ClosetView: View {
         // Insert into SwiftData on background thread via @ModelActor
         let actor = ClothingImportActor(modelContainer: modelContext.container)
 
+        // Fetch default color ID for the actor's context
+        let colorDescriptor = FetchDescriptor<WardrobeColor>()
+        let defaultColorID = (try? modelContext.fetch(colorDescriptor))?.first(where: { $0.name == WardrobeColor.Names.black })?.persistentModelID
+
         do {
-            try await actor.importClothingItems(from: processedImages)
+            try await actor.importClothingItems(from: processedImages, defaultColorID: defaultColorID)
         } catch {
             print("Failed to import items: \(error)")
         }

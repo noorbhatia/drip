@@ -3,6 +3,7 @@
 //  drip
 //
 
+import SwiftData
 import SwiftUI
 
 struct OutfitSuggestionCard: View {
@@ -57,17 +58,11 @@ struct OutfitSuggestionCard: View {
 #Preview {
     ScrollView {
         OutfitSuggestionCard(
-            occasion: .casual,
+            occasion: Occasion(name: Occasion.Names.casual, displayName: "Casual", systemImage: "sun.max", suggestionDescription: "Relaxed", sortOrder: 0),
             description: "Relaxed and comfortable for everyday",
             image: "thumbnail"
         )
         .padding(.horizontal)
-
-        OutfitSuggestionCard(
-            occasion: .work,
-            description: "Professional and polished",
-            image: "thumbnail_2"
-        )
-        .padding(.horizontal)
     }
+    .modelContainer(PreviewData.previewContainer)
 }

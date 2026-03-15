@@ -24,7 +24,7 @@ struct ClothingPickerView: View {
             let lowercasedQuery = searchText.lowercased()
             items = items.filter { item in
                 item.name.lowercased().contains(lowercasedQuery) ||
-                item.brand?.lowercased().contains(lowercasedQuery) == true
+                item.brand?.name.lowercased().contains(lowercasedQuery) == true
             }
         }
 

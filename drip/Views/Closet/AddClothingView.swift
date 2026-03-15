@@ -11,13 +11,15 @@ struct AddClothingView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
+    @Query(sort: \WardrobeColor.sortOrder) private var allColors: [WardrobeColor]
+
     // Optional initial image data passed from PhotosPicker
     var initialImageData: Data? = nil
 
     @State private var name = ""
     @State private var selectedCategory: ClothingCategory = .tops
-    @State private var selectedColor: WardrobeColor = .black
-    @State private var brand = ""
+    @State private var selectedColor: WardrobeColor?
+    @State private var selectedBrand: Brand? = nil
     @State private var notes = ""
     @State private var tags: [String] = []
     @State private var newTag = ""
@@ -60,6 +62,9 @@ struct AddClothingView: View {
                 if let data = initialImageData {
                     selectedImageData = data
                 }
+                if selectedColor == nil {
+                    selectedColor = allColors.first { $0.name == WardrobeColor.Names.black }
+                }
             }
         }
     }
@@ -75,7 +80,7 @@ struct AddClothingView: View {
                             .scaledToFill()
                             .frame(width: geometry.size.width, height: 200)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
-                           
+
                     }
                     .frame(height: 200)
                 } else {
@@ -117,7 +122,15 @@ struct AddClothingView: View {
     private var detailsSection: some View {
         Section("Details") {
             TextField("Name", text: $name)
-            TextField("Brand (optional)", text: $brand)
+            LabeledContent("Brand") {
+                Picker("", selection: $selectedBrand) {
+                    Text("None").tag(Brand?.none)
+                    ForEach(Brand.defaults, id: \.name) { brand in
+                        Label(brand.name, systemImage: brand.icon)
+                            .tag(Brand?(Brand(name: brand.name, icon: brand.icon)))
+                    }
+                }
+            }
         }
     }
 
@@ -136,7 +149,7 @@ struct AddClothingView: View {
     private var colorSection: some View {
         Section("Color") {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: 44))], spacing: 12) {
-                ForEach(WardrobeColor.allCases) { color in
+                ForEach(allColors) { color in
                     colorButton(for: color)
                 }
             }
@@ -149,7 +162,7 @@ struct AddClothingView: View {
             selectedColor = color
         } label: {
             ZStack {
-                if color == .multicolor {
+                if color.isMulticolor {
                     Circle()
                         .fill(
                             AngularGradient(
@@ -159,27 +172,27 @@ struct AddClothingView: View {
                         )
                 } else {
                     Circle()
-                        .fill(color.color)
+                        .fill(color.swiftUIColor)
                 }
 
                 Circle()
                     .strokeBorder(
-                        selectedColor == color ? Color.accentColor : Color.secondary.opacity(0.3),
-                        lineWidth: selectedColor == color ? 3 : 1
+                        selectedColor === color ? Color.accentColor : Color.secondary.opacity(0.3),
+                        lineWidth: selectedColor === color ? 3 : 1
                     )
 
-                if selectedColor == color {
+                if selectedColor === color {
                     Image(systemName: "checkmark")
                         .font(.caption.weight(.bold))
-                        .foregroundStyle(color == .white || color == .cream || color == .beige ? .black : .white)
+                        .foregroundStyle(color.isLightColor ? .black : .white)
                 }
             }
             .frame(width: 44, height: 44)
         }
         .buttonStyle(.plain)
-        .sensoryFeedback(.selection, trigger: selectedColor)
+        .sensoryFeedback(.selection, trigger: selectedColor?.name)
         .accessibilityLabel(color.displayName)
-        .accessibilityAddTraits(selectedColor == color ? .isSelected : [])
+        .accessibilityAddTraits(selectedColor === color ? .isSelected : [])
     }
 
     private var tagsSection: some View {
@@ -241,9 +254,9 @@ struct AddClothingView: View {
             name: name.trimmingCharacters(in: .whitespacesAndNewlines),
             imageData: selectedImageData,
             category: selectedCategory,
-            color: selectedColor,
+            wardrobeColor: selectedColor,
             tags: tags,
-            brand: brand.isEmpty ? nil : brand,
+            brand: selectedBrand,
             notes: notes.isEmpty ? nil : notes
         )
 

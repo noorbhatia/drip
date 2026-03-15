@@ -57,7 +57,7 @@ struct OutfitCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Image(systemName: outfit.occasion.systemImage)
+                Image(systemName: outfit.occasion?.systemImage ?? "questionmark")
                     .font(.title2)
                     .foregroundStyle(.accent)
 
@@ -74,7 +74,7 @@ struct OutfitCard: View {
                     .font(.subheadline.weight(.semibold))
                     .lineLimit(1)
 
-                Text(outfit.occasion.displayName)
+                Text(outfit.occasion?.displayName ?? "")
                     .font(.caption)
                     .foregroundStyle(.secondary)
 

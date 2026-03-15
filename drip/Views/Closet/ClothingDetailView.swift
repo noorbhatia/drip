@@ -11,23 +11,94 @@ struct ClothingDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Bindable var item: ClothingItem
 
+    @Query(sort: \WardrobeColor.sortOrder) private var allColors: [WardrobeColor]
+
     @State private var showDeleteConfirmation = false
+    @State private var showRenameItemModal: Bool = false
+    @State private var renameText = ""
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
+
+            List {
                 itemImage
-                detailsCard
-                statsCard
-                tagsSection
-                notesSection
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(.all, 0)
+
+                Section {
+                    LazyVGrid(
+                        columns: [
+                            GridItem(),
+                            GridItem(),
+                            GridItem(),
+                            GridItem(),
+                            GridItem(),
+                            GridItem(),
+                        ]
+                    ) {
+                        ForEach(allColors) { color in
+                            Circle()
+                                .fill(color.isMulticolor
+                                    ? AnyShapeStyle(AngularGradient(colors: [.red, .orange, .yellow, .green, .blue, .purple, .red], center: .center))
+                                    : AnyShapeStyle(color.swiftUIColor))
+                                .frame(width: 30, height: 30)
+                                .overlay(
+                                    Circle()
+                                        .strokeBorder(item.wardrobeColor === color ? Color.accentColor : .secondary.opacity(0.3), lineWidth: 2)
+                                )
+                                .onTapGesture {
+                                    item.wardrobeColor = color
+                                }
+                        }
+                    }
+                }
+
+                Section {
+                    LabeledContent("Type") {
+                        Picker("", selection: $item.category) {
+                            ForEach(ClothingCategory.allCases) { category in
+                                Label(category.displayName, systemImage: category.systemImage)
+                                    .tag(category)
+                            }
+                        }
+                    }
+
+
+
+                    LabeledContent("Brand") {
+                        Picker("", selection: $item.brand) {
+                            Text("None").tag(Brand?.none)
+                            ForEach(Brand.defaults, id: \.name) { brand in
+                                Label(brand.name, systemImage: brand.icon)
+                                    .tag(Brand?(Brand(name: brand.name, icon: brand.icon)))
+                            }
+                        }
+                    }
+                   
+                    LabeledContent("Price") {
+                        TextField("",value: $item.price, format: .currency(code: Locale.current.currency?.identifier ?? "USD"))
+                            .keyboardType(.numberPad)
+                    }
+
+                }
+
+                Section {
+                    statsCard
+                }
             }
-            .padding()
-            .padding(.bottom, 60)
-        }
-        .navigationTitle(item.name)
-        .navigationBarTitleDisplayMode(.inline)
+//            .listStyle(.grouped)
+//            .padding()
+//            .padding(.bottom, 60)
+
+            .toolbarTitleDisplayMode(.inline)
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                    Text(item.name)
+                    .onTapGesture {
+                        withAnimation {
+                            showRenameItemModal = true
+                        }
+                    }
+            }
             ToolbarItem(placement: .primaryAction) {
                 Menu {
                     Button {
@@ -49,6 +120,19 @@ struct ClothingDetailView: View {
                 }
             }
         }
+        .alert("Rename item", isPresented: $showRenameItemModal){
+            TextField(item.name, text: $renameText)
+           
+            Button(role: .cancel){
+                showRenameItemModal = false
+            }
+            Button("Save") {
+                item.name = renameText
+                showRenameItemModal = false
+            }
+            
+        }
+        .toolbar(.hidden, for: .tabBar)
         .confirmationDialog("Delete Item", isPresented: $showDeleteConfirmation, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
                 deleteItem()
@@ -72,66 +156,18 @@ struct ClothingDetailView: View {
         } else {
             ZStack {
                 RoundedRectangle(cornerRadius: 20)
-                    .fill(item.color.color.opacity(0.3))
+                    .fill((item.wardrobeColor?.swiftUIColor ?? .gray).opacity(0.3))
                     .frame(height: 300)
 
                 Image(systemName: item.category.systemImage)
                     .font(.system(size: 80))
                     .foregroundStyle(.secondary)
             }
-            .glassEffect(.regular, in: .rect(cornerRadius: 20))
-        }
-    }
-
-    private var detailsCard: some View {
-        GlassCard {
-            VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Category")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Label(item.category.displayName, systemImage: item.category.systemImage)
-                            .font(.body.weight(.medium))
-                    }
-
-                    Spacer()
-
-                    VStack(alignment: .trailing, spacing: 4) {
-                        Text("Color")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        HStack(spacing: 6) {
-                            Circle()
-                                .fill(item.color.color)
-                                .frame(width: 18, height: 18)
-                                .overlay(
-                                    Circle()
-                                        .strokeBorder(.secondary.opacity(0.3), lineWidth: 1)
-                                )
-                            Text(item.color.displayName)
-                                .font(.body.weight(.medium))
-                        }
-                    }
-                }
-
-                if let brand = item.brand {
-                    Divider()
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Brand")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Text(brand)
-                            .font(.body.weight(.medium))
-                    }
-                }
-            }
-            .padding()
         }
     }
 
     private var statsCard: some View {
-        GlassCard {
+
             HStack {
                 statItem(title: "Times Worn", value: "\(item.wearCount)", icon: "repeat")
 
@@ -155,8 +191,7 @@ struct ClothingDetailView: View {
                     )
                 }
             }
-            .padding()
-        }
+
     }
 
     private func statItem(title: String, value: String, icon: String) -> some View {
@@ -175,31 +210,7 @@ struct ClothingDetailView: View {
         .frame(maxWidth: .infinity)
     }
 
-    @ViewBuilder
-    private var tagsSection: some View {
-        if !item.tags.isEmpty {
-            GlassCard {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Tags")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
 
-                    FlowLayout(spacing: 8) {
-                        ForEach(item.tags, id: \.self) { tag in
-                            Text(tag)
-                                .font(.caption)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 6)
-                                .background(.secondary.opacity(0.15))
-                                .clipShape(Capsule())
-                        }
-                    }
-                }
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
-        }
-    }
 
     @ViewBuilder
     private var notesSection: some View {

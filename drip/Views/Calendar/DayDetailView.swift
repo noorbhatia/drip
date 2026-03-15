@@ -101,7 +101,7 @@ struct DayDetailView: View {
                     .fill(.secondary.opacity(0.15))
                     .frame(width: 50, height: 50)
                     .overlay {
-                        Image(systemName: outfit.occasion.systemImage)
+                        Image(systemName: outfit.occasion?.systemImage ?? "questionmark")
                             .foregroundStyle(.secondary)
                     }
             }
@@ -109,7 +109,7 @@ struct DayDetailView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(outfit.name)
                     .font(.subheadline.weight(.medium))
-                Text(outfit.occasion.displayName)
+                Text(outfit.occasion?.displayName ?? "")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

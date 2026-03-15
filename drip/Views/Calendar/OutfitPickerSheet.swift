@@ -72,7 +72,7 @@ struct OutfitPickerSheet: View {
                         .frame(height: 160)
                         .overlay {
                             VStack(spacing: 6) {
-                                Image(systemName: outfit.occasion.systemImage)
+                                Image(systemName: outfit.occasion?.systemImage ?? "questionmark")
                                     .font(.title2)
                                     .foregroundStyle(.secondary)
                                 Text("\(outfit.items?.count ?? 0) items")

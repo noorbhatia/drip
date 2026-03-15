@@ -14,6 +14,8 @@ final class WardrobeService {
 
     var clothingItems: [ClothingItem] = []
     var outfits: [Outfit] = []
+    var wardrobeColors: [WardrobeColor] = []
+    var occasions: [Occasion] = []
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
@@ -23,6 +25,8 @@ final class WardrobeService {
     func fetchAll() {
         fetchClothingItems()
         fetchOutfits()
+        fetchWardrobeColors()
+        fetchOccasions()
     }
 
     func fetchClothingItems() {
@@ -47,6 +51,38 @@ final class WardrobeService {
             print("Failed to fetch outfits: \(error)")
             outfits = []
         }
+    }
+
+    func fetchWardrobeColors() {
+        let descriptor = FetchDescriptor<WardrobeColor>(
+            sortBy: [SortDescriptor(\.sortOrder)]
+        )
+        do {
+            wardrobeColors = try modelContext.fetch(descriptor)
+        } catch {
+            print("Failed to fetch wardrobe colors: \(error)")
+            wardrobeColors = []
+        }
+    }
+
+    func fetchOccasions() {
+        let descriptor = FetchDescriptor<Occasion>(
+            sortBy: [SortDescriptor(\.sortOrder)]
+        )
+        do {
+            occasions = try modelContext.fetch(descriptor)
+        } catch {
+            print("Failed to fetch occasions: \(error)")
+            occasions = []
+        }
+    }
+
+    func defaultColor() -> WardrobeColor? {
+        wardrobeColors.first { $0.name == WardrobeColor.Names.black }
+    }
+
+    func defaultOccasion() -> Occasion? {
+        occasions.first { $0.name == Occasion.Names.casual }
     }
 
     func addClothingItem(_ item: ClothingItem) {
@@ -83,7 +119,7 @@ final class WardrobeService {
         let lowercasedQuery = query.lowercased()
         return clothingItems.filter { item in
             item.name.lowercased().contains(lowercasedQuery) ||
-            item.brand?.lowercased().contains(lowercasedQuery) == true ||
+            item.brand?.name.lowercased().contains(lowercasedQuery) == true ||
             item.tags.contains { $0.lowercased().contains(lowercasedQuery) }
         }
     }

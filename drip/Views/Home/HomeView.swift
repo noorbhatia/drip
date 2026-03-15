@@ -14,6 +14,8 @@ struct HomeView: View {
     @State private var suggestionService = OutfitSuggestionService()
     @State private var showOutfitBuilder = false
     @State private var showCalendar = false
+    @Query(sort: \Occasion.sortOrder) private var allOccasions: [Occasion]
+
     @State private var selectedOccasion: Occasion?
     @State private var woreOutfitID: UUID?
 
@@ -24,7 +26,8 @@ struct HomeView: View {
     }
 
     private var outfitsByOccasion: [(occasion: Occasion, outfits: [Outfit])] {
-        Dictionary(grouping: outfits, by: \.occasion)
+        let grouped = Dictionary(grouping: outfits.filter { $0.occasion != nil }) { $0.occasion! }
+        return grouped
             .map { (occasion: $0.key, outfits: $0.value) }
             .sorted { $0.outfits.count > $1.outfits.count }
     }
@@ -186,7 +189,7 @@ struct HomeView: View {
                             .foregroundStyle(.white)
 
                         HStack(spacing: 12) {
-                            Label(outfit.occasion.displayName, systemImage: outfit.occasion.systemImage)
+                            Label(outfit.occasion?.displayName ?? "", systemImage: outfit.occasion?.systemImage ?? "questionmark")
                                 .font(.subheadline)
 
                             if let itemCount = outfit.items?.count {
@@ -296,7 +299,7 @@ struct HomeView: View {
             .padding(.horizontal)
 
             VStack(spacing: 0) {
-                ForEach(Array(outfitsByOccasion.prefix(4).enumerated()), id: \.element.occasion) { index, group in
+                ForEach(Array(outfitsByOccasion.prefix(4).enumerated()), id: \.element.occasion.id) { index, group in
                     outfitGroupRow(group.occasion, outfits: group.outfits)
 
                     if index < min(outfitsByOccasion.count, 4) - 1 {
@@ -497,7 +500,7 @@ struct HomeView: View {
                         )
                         .overlay {
                             VStack(spacing: 8) {
-                                Image(systemName: outfit.occasion.systemImage)
+                                Image(systemName: outfit.occasion?.systemImage ?? "questionmark")
                                     .font(.title)
                                     .foregroundStyle(.secondary)
                                 Text("\(outfit.items?.count ?? 0) items")

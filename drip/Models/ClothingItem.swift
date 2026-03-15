@@ -8,28 +8,27 @@ import SwiftData
 
 @Model
 final class ClothingItem {
+    #Index<ClothingItem>([\.dateAdded], [\.categoryRawValue], [\.isFavorite])
+
     var id: UUID
     var name: String
     @Attribute(.externalStorage) var imageData: Data?
     var categoryRawValue: String
-    var colorRawValue: String
     var tags: [String]
-    var brand: String?
+    @Relationship(deleteRule: .nullify, inverse: \Brand.clothingItems)
+    var brand: Brand?
     var notes: String?
     var isFavorite: Bool
     var dateAdded: Date
 
-    @Relationship(inverse: \Outfit.items)
+    var wardrobeColor: WardrobeColor?
+    var price: Decimal?
+    @Relationship(deleteRule: .nullify, inverse: \Outfit.items)
     var outfits: [Outfit]?
 
     var category: ClothingCategory {
         get { ClothingCategory(rawValue: categoryRawValue) ?? .tops }
         set { categoryRawValue = newValue.rawValue }
-    }
-
-    var color: WardrobeColor {
-        get { WardrobeColor(rawValue: colorRawValue) ?? .black }
-        set { colorRawValue = newValue.rawValue }
     }
 
     var wearCount: Int {
@@ -47,9 +46,9 @@ final class ClothingItem {
         name: String,
         imageData: Data? = nil,
         category: ClothingCategory,
-        color: WardrobeColor,
+        wardrobeColor: WardrobeColor? = nil,
         tags: [String] = [],
-        brand: String? = nil,
+        brand: Brand? = nil,
         notes: String? = nil,
         isFavorite: Bool = false
     ) {
@@ -57,7 +56,7 @@ final class ClothingItem {
         self.name = name
         self.imageData = imageData
         self.categoryRawValue = category.rawValue
-        self.colorRawValue = color.rawValue
+        self.wardrobeColor = wardrobeColor
         self.tags = tags
         self.brand = brand
         self.notes = notes

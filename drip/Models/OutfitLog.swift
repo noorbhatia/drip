@@ -8,6 +8,8 @@ import SwiftData
 
 @Model
 final class OutfitLog {
+    #Index<OutfitLog>([\.date], [\.typeRawValue], [\.date, \.typeRawValue])
+
     var id: UUID
     var date: Date
     var typeRawValue: String
