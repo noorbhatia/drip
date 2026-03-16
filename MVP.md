@@ -2,17 +2,21 @@
 
 This document tracks what's built, what's next, and maps features to the user stories and research priorities from [RESEARCH.md](RESEARCH.md).
 
-*Last updated: February 7, 2026*
+*Last updated: March 15, 2026*
 
 ---
 
 ## Current State (What's Built)
 
 ### Models
-- [x] `ClothingItem` — name, image, category, color, brand, notes, tags, isFavorite, wearCount, lastWornDate
-- [x] `Outfit` — name, occasion, notes, isFavorite, wearCount, lastWornDate, previewImageData
+- [x] `ClothingItem` — name, image, category, color, brand, notes, tags, isFavorite, price, wearCount, lastWornDate
+- [x] `Outfit` — name, occasion, notes, isFavorite, wearCount, lastWornDate, previewImageData, plannedDates, wornDates
+- [x] `OutfitLog` — date, type (planned/worn), outfit relationship (supports calendar integration)
+- [x] `Brand` — @Model with unique name, icon, clothingItems relationship (25 defaults)
 - [x] Many-to-many `ClothingItem ↔ Outfit` relationship
-- [x] Enums: `ClothingCategory` (10), `Occasion` (9), `WardrobeColor` (17)
+- [x] `ClothingCategory` enum (10 types)
+- [x] `WardrobeColor` @Model class (17 colors, seeded at launch)
+- [x] `Occasion` @Model class (9 types, seeded at launch)
 
 ### Core CRUD
 - [x] Add clothing item (camera or photo picker)
@@ -22,7 +26,7 @@ This document tracks what's built, what's next, and maps features to the user st
 - [x] Favorite/unfavorite items and outfits
 - [x] Search items by name, brand, tags
 - [x] Filter by category (pill UI)
-- [ ] **Edit existing clothing item** — ClothingDetailView is read-only
+- [x] Edit existing clothing item (inline editing in ClothingDetailView: color, category, brand, price, rename)
 
 ### Outfit Builder (3-step flow)
 - [x] Step 1: Select items (grid with multi-select, category filter, search)
@@ -53,12 +57,12 @@ This document tracks what's built, what's next, and maps features to the user st
 > *These close critical gaps and directly drive daily retention.*
 
 #### 1. Edit Existing Items
-**Status:** Not started
+**Status:** Complete
 **Why:** Core CRUD gap — users can add and delete but can't fix a wrong category or update a brand name.
 
-- [ ] Add `EditClothingView` (reuse AddClothingView form fields)
-- [ ] Add "Edit" action to ClothingDetailView toolbar
-- [ ] Save changes to existing `ClothingItem` in-place
+- [x] Inline editing in ClothingDetailView (color picker, category picker, brand picker, price field)
+- [x] Rename item via modal dialog
+- [x] Save changes to existing `ClothingItem` in-place
 
 **User Story:**
 > *As a user, I want to tap an item and edit its name, category, color, brand, tags, or notes so I can fix mistakes without deleting and re-adding.*
@@ -132,13 +136,14 @@ This document tracks what's built, what's next, and maps features to the user st
 ---
 
 #### 6. Outfit Calendar
-**Status:** CTA banner only ("Plan Your Week" links to outfit builder)
+**Status:** Complete (month view with plan/worn tracking)
 **Why:** Every competitor has an outfit calendar. Table-stakes feature.
 
 - [x] "Plan Your Week" CTA in HomeView
-- [ ] Calendar view showing outfits planned/worn per day
-- [ ] Assign outfits to future dates
-- [ ] View past outfit history by date
+- [x] Calendar view showing outfits planned/worn per day (blue/green dot indicators)
+- [x] Assign outfits to future dates (OutfitPickerSheet)
+- [x] View past outfit history by date (DayDetailView)
+- [x] "Mark as Worn" button for planned outfits
 - [ ] Week-at-a-glance view
 
 **User Story:**
@@ -147,10 +152,11 @@ This document tracks what's built, what's next, and maps features to the user st
 ---
 
 #### 7. Cost-Per-Wear Tracking
-**Status:** Not started (model field missing)
+**Status:** Partially built (price field exists, no cost-per-wear computation yet)
 **Why:** Users find it "oddly satisfying." Reveals hidden value and exposes wardrobe regrets.
 
-- [ ] Add `purchasePrice: Double?` field to `ClothingItem`
+- [x] Add `price: Decimal?` field to `ClothingItem`
+- [x] Price input on ClothingDetailView (currency formatted)
 - [ ] Computed `costPerWear` property: price ÷ wearCount
 - [ ] Display cost-per-wear on ClothingDetailView
 - [ ] Sort/filter by cost-per-wear in analytics
@@ -199,7 +205,7 @@ This document tracks what's built, what's next, and maps features to the user st
 **Status:** Occasion data exists on Outfit model; suggestion service doesn't use it
 **Why:** Users want to ask "what should I wear to work?" vs. "what should I wear on a date?"
 
-- [x] Occasion enum (9 types) on Outfit model
+- [x] Occasion @Model class (9 types) on Outfit model
 - [ ] Filter suggestions by selected occasion
 - [ ] Home screen occasion quick-select (e.g. "I'm going to…")
 - [ ] Learn occasion patterns from wear history
@@ -233,13 +239,13 @@ This document tracks what's built, what's next, and maps features to the user st
 
 | # | Feature | Impact | Effort | Priority | Status |
 |---|---------|--------|--------|----------|--------|
-| 1 | Edit existing items | High | Low | **P0** | Not started |
+| 1 | Edit existing items | High | Low | **P0** | **Complete** |
 | 2 | "Wore Today" quick logging | High | Low | **P0** | Partial |
 | 3 | Wire smart hero card | High | Low | **P0** | Partial |
 | 4 | Wardrobe analytics screen | High | Medium | **P1** | Inline only |
 | 5 | Rediscover forgotten items | High | Low | **P1** | Partial |
-| 6 | Outfit calendar | High | Medium | **P1** | CTA only |
-| 7 | Cost-per-wear tracking | High | Medium | **P1** | Not started |
+| 6 | Outfit calendar | High | Medium | **P1** | **Complete** |
+| 7 | Cost-per-wear tracking | High | Medium | **P1** | Partial |
 | 8 | Weather integration | High | Medium | **P2** | Not started |
 | 9 | Smart suggestions (rule-based) | High | Medium | **P2** | Placeholder |
 | 10 | Occasion filtering | Medium | Low | **P2** | Data exists |
@@ -250,9 +256,9 @@ This document tracks what's built, what's next, and maps features to the user st
 
 | Field | Model | Priority | Notes |
 |-------|-------|----------|-------|
-| `purchasePrice: Double?` | ClothingItem | P1 | Required for cost-per-wear |
+| ~~`price: Decimal?`~~ | ~~ClothingItem~~ | ~~P1~~ | **Done** — added as `price: Decimal?` |
+| ~~`OutfitLog` model~~ | ~~New model~~ | ~~P1~~ | **Done** — tracks planned/worn events per outfit |
 | `purchaseDate: Date?` | ClothingItem | P1 | Optional, enriches analytics |
-| `plannedDate: Date?` | Outfit | P1 | Required for outfit calendar |
 | `weatherSuitability: [String]?` | ClothingItem | P2 | Optional weather tags |
 
 ---

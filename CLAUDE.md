@@ -6,16 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 # Build from command line
-xcodebuild -project drip.xcodeproj -scheme drip -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' build
+xcodebuild -project drip.xcodeproj -scheme drip -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0' build
 
 # Build and run tests (when tests are added)
-xcodebuild -project drip.xcodeproj -scheme drip -destination 'platform=iOS Simulator,name=iPhone 16' test
+xcodebuild -project drip.xcodeproj -scheme drip -destination 'platform=iOS Simulator,name=iPhone 16,OS=26.0' test
 
 # Clean build
 xcodebuild -project drip.xcodeproj -scheme drip clean
 ```
-
-Alternatively, open `drip.xcodeproj` in Xcode and use Cmd+B to build, Cmd+R to run.
 
 ## Architecture
 
@@ -38,6 +36,7 @@ drip/
 │   ├── OutfitLog.swift         # @Model for planned/worn events (calendar integration)
 │   ├── Category.swift          # ClothingCategory enum (tops, bottoms, etc.)
 │   ├── ScrollInfo.swift        # Scroll state tracking
+│   ├── Brand.swift             # @Model with unique name, clothingItems relationship
 │   ├── WardrobeColor.swift     # @Model with hex color, sortOrder (was enum)
 │   ├── Occasion.swift          # @Model with systemImage, suggestionDescription, sortOrder (was enum)
 │   └── SchemaVersioning.swift  # DripSchemaV1 + DripMigrationPlan
@@ -52,7 +51,13 @@ drip/
 │   │   ├── CalendarDayCell.swift      # Individual day cell
 │   │   ├── DayDetailView.swift        # Day detail/outfit assignment
 │   │   └── OutfitPickerSheet.swift    # Outfit selection for calendar
-│   ├── Closet/            # ClosetView, grid, filters, add/detail views
+│   ├── Closet/
+│   │   ├── AddClothingView.swift    # Add new clothing item
+│   │   ├── ClosetFilterView.swift   # Filter/sort controls
+│   │   ├── ClosetView.swift         # Main closet tab
+│   │   ├── ClothingDetailView.swift # Clothing item detail/edit
+│   │   ├── ClothingGridView.swift   # Grid layout for clothing
+│   │   └── ClothingItemCard.swift   # Individual clothing card
 │   ├── OutfitBuilder/
 │   │   ├── OutfitBuilderView.swift    # Outfit creation flow
 │   │   ├── OutfitEditorView.swift     # Outfit editor wrapper
@@ -61,7 +66,11 @@ drip/
 │   │   ├── ClothingPickerView.swift
 │   │   ├── BackgroundColorPicker.swift
 │   │   └── SaveOutfitView.swift
-│   └── Components/        # Reusable: GlassCard, CategoryPill, FAB, EmptyState
+│   └── Components/
+│       ├── CategoryPill.swift         # Category filter pill
+│       ├── EmptyStateView.swift       # Empty state placeholder
+│       ├── FloatingActionButton.swift # FAB for primary actions
+│       └── GlassCard.swift            # Glass-morphism card container
 ├── Services/
 │   ├── WardrobeService.swift          # SwiftData CRUD, queries, @Observable
 │   ├── OutfitSuggestionService.swift  # Outfit suggestion logic
@@ -82,7 +91,7 @@ drip/
 - **Vision Framework**: `BackgroundRemover` uses `VNGenerateForegroundInstanceMaskRequest` for clothing image background removal.
 - **Extensions**: `UIImage+Extensions` for dominant color extraction; `Color+Extensions` for luminance, contrast ratio, and hex helpers.
 - **Previews**: Use `PreviewData.previewContainer` for in-memory SwiftData in `#Preview` blocks.
-- **Concurrency**: Swift 5.0 strict concurrency with `@MainActor` default isolation.
+- **Concurrency**: Swift 6 strict concurrency with `@MainActor` default isolation.
 
 ### SwiftData Schema
 
@@ -125,5 +134,5 @@ Schema([ClothingItem.self, Outfit.self, OutfitLog.self, Brand.self, WardrobeColo
 ## Environment
 
 - Xcode 26+ (iOS 26.2 SDK)
-- `monocle` CLI must be running (used for symbol inspection — see below)
+- `monocle` CLI must be running (used for symbol inspection — see above)
 - No SPM dependencies — pure Apple frameworks
